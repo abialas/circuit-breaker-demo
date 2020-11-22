@@ -22,6 +22,7 @@ final class LoanApiClientWithoutCircuitBreaker implements LoanApiClient {
     }
 
     public Flux<BorrowerWithLoans> findBorrowersWithLoans() {
+        // this one takes 4 sec
         return webClient
                 .get()
                 .uri("/borrowers")
@@ -33,6 +34,7 @@ final class LoanApiClientWithoutCircuitBreaker implements LoanApiClient {
     }
 
     public Mono<BorrowerWithLoans> findBorrowerWithLoans(Long borrowerId) {
+        // this one is quick
         return webClient
                 .get()
                 .uri("/borrowers/{id}", borrowerId)
