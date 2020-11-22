@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -44,7 +45,9 @@ public class LoanFacade {
         return borrowerRepository.findAll()
                 .flatMap(borrower -> findLoansForBorrower(borrower)
                         .map(loans -> new BorrowerWithLoans(borrower, loans))
-                );
+                )
+                .delayElements(Duration.ofSeconds(2))
+                .log();
     }
 
     public Mono<BorrowerWithLoans> findBorrowerWithLoans(Long borrowerId) {

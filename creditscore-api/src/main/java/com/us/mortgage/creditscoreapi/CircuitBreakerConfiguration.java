@@ -16,19 +16,38 @@ import java.time.Duration;
 @Configuration
 class CircuitBreakerConfiguration {
 
-    @Bean
-    public Customizer<ReactiveResilience4JCircuitBreakerFactory> defaultCustomizer() {
-        return factory -> factory.configureDefault(id -> new Resilience4JConfigBuilder(id)
-                .circuitBreakerConfig(CircuitBreakerConfig
-                        .custom()
-                        .minimumNumberOfCalls(10)
-                        .slidingWindowSize(10)
-                        .waitDurationInOpenState(Duration.ofSeconds(10))
-                        .build())
-                .timeLimiterConfig(TimeLimiterConfig
-                        .custom()
-                        .timeoutDuration(Duration.ofSeconds(5)).build())
-                .build());
-    }
+	@Bean
+	public Customizer<ReactiveResilience4JCircuitBreakerFactory> loanApiCircuitBreakerCustomizer() {
+		return factory ->
+				factory.configure(builder -> builder
+						.circuitBreakerConfig(CircuitBreakerConfig
+								.custom()
+								.minimumNumberOfCalls(5)
+								.slidingWindowSize(5)
+								.permittedNumberOfCallsInHalfOpenState(5)
+								.waitDurationInOpenState(Duration.ofSeconds(60))
+								.build())
+						.timeLimiterConfig(TimeLimiterConfig
+								.custom()
+								.timeoutDuration(Duration.ofSeconds(3)).build())
+						.build(), "loanApi");
+	}
+
+	@Bean
+	public Customizer<ReactiveResilience4JCircuitBreakerFactory> defaultCircuitBreakerCustomizer() {
+		return factory ->
+				factory.configureDefault(id ->
+						new Resilience4JConfigBuilder(id)
+								.circuitBreakerConfig(CircuitBreakerConfig
+										.custom()
+										.minimumNumberOfCalls(10)
+										.slidingWindowSize(10)
+										.waitDurationInOpenState(Duration.ofSeconds(60))
+										.build())
+								.timeLimiterConfig(TimeLimiterConfig
+										.custom()
+										.timeoutDuration(Duration.ofSeconds(5)).build())
+								.build());
+	}
 
 }
